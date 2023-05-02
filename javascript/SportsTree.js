@@ -28,6 +28,7 @@ function setOpenLinkButtonElement(linkButtonElement) {
 
 function createSportsTree(sites) {
     const sportsTreeElement = document.createElement("li");
+    sportsTreeElement.className = "sites-list";
     sportsTreeElement.innerHTML = `<span class="root-selector">Sports Tree</span>`;
     sportsTreeParentElement.appendChild(sportsTreeElement);
     const sitesParentElement = document.createElement("ul");
@@ -43,19 +44,24 @@ function addSiteElement(parentElement, site) {
     childElement.innerHTML = `<span class="selector">${site.treeViewText}</span>`;
     parentElement.appendChild(childElement);
     addElementClickedEventHandler(childElement, site.treeViewText, site.treeViewLink, site.treeViewDataType);
+    addChildLoadingElement(childElement);
 }
 
 function addElementClickedEventHandler(element, siteName, endpoint, dataType) {
     element.addEventListener("click", async function (e) {
         e.stopPropagation();
         removeHighlight();
-        if (dataType === "Link" && endpoint !== "") {
-           element.classList.add("highlight");
+        if (dataType === "None") {
+            return;
         }
-        if (e.target.parentElement.querySelector(".nested")) {
+        if (dataType === "Link") {
+            element.classList.add("highlight");
+        }
+        else {
             e.target.parentElement.querySelector(".nested").classList.toggle("active");
-        } else {
-            if (!e.target.parentElement.querySelector(".selector-down")) {
+            const ulElement = e.target.parentElement.querySelector("ul");
+            const liElements = ulElement.querySelectorAll("li");
+            if (liElements[0].innerHTML === "Loading...") {
                 await handleExpand(e.target, siteName, endpoint, dataType);
             }
         }
@@ -69,6 +75,11 @@ async function handleExpand(parentElement, siteName, endpoint, dataType) {
         return;
     }
     const treeViewItems = await indexRazorObject.invokeMethodAsync("HandleExpand", siteName, endpoint, dataType);
+    const ulElement = parentElement.parentElement.querySelector("ul");
+    const liElements = ulElement.querySelectorAll("li");
+    if (liElements[0].innerHTML === "Loading...") {
+        ulElement.removeChild(liElements[0]);
+    }
     if (treeViewItems === null || Object.keys(treeViewItems).length === 0) {
         addChildNothingFoundElement(parentElement);
     }
@@ -94,6 +105,7 @@ function addChildElement(parentElement, siteName, childData) {
     else
     {
         childElement.innerHTML = `<span class="selector">${childData.treeViewText}</span>`;
+        addChildLoadingElement(childElement);
     }
     addElementClickedEventHandler(childElement, siteName, childData.treeViewLink, childData.treeViewDataType);
     parentElement.appendChild(childElement);
@@ -103,6 +115,14 @@ function addChildNothingFoundElement(parentElement) {
     const childElement = document.createElement("ul");
     childElement.className = "nested active";
     childElement.innerHTML = '<li class="nothing-found">Nothing found</li>';
+    addElementClickedEventHandler(childElement, "", "", "None");
+    parentElement.appendChild(childElement);
+}
+
+function addChildLoadingElement(parentElement) {
+    const childElement = document.createElement("ul");
+    childElement.className = "nested";
+    childElement.innerHTML = '<li class="loading">Loading...</li>';
     addElementClickedEventHandler(childElement, "", "", "Link");
     parentElement.appendChild(childElement);
 }

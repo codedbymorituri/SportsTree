@@ -1,0 +1,13 @@
+﻿@media(max-width: 712px) {
+    .treeview-container {
+        top: 0px;
+    }
+
+    .sites-list {
+        margin-left: -30px;
+    }
+
+    .status-text {
+        margin-left: -12px;
+    }
+}

@@ -96,6 +96,8 @@ li {
 
 .status-text {
     padding-top: 8px;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .open-link-button {
@@ -104,6 +106,7 @@ li {
     color: #ff00ff;
     border-color: #ff00ff;
     background: #2d2d2d;
+    white-space: nowrap;
 }
 
 .highlight {
