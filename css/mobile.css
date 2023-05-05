@@ -10,4 +10,8 @@
     .status-text {
         margin-left: -12px;
     }
+
+    .reload-button {
+        top: 4px;
+    }
 }

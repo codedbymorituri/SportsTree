@@ -3,7 +3,6 @@ console.log("SportsTree is running"); //
 let indexRazorObject;
 let sportsTreeParentElement;
 let statusTextElement;
-let openLinkButtonElement;
 
 function setIndexRazorObject(value) {
     indexRazorObject = value;
@@ -17,12 +16,17 @@ function setStatusTextElement(statusElement) {
     statusTextElement = statusElement;
 }
 
-function setOpenLinkButtonElement(linkButtonElement) {
-    openLinkButtonElement = linkButtonElement;
+function setOpenLinkButtonElement(openLinkButtonElement) {
     openLinkButtonElement.addEventListener("click", async function (e) {
         if (statusTextElement.innerHTML.startsWith("http")) {
             window.open(statusTextElement.innerHTML, "_blank");
         }
+    });
+}
+
+function setReloadButtonElement(reloadButtonElement) {
+    reloadButtonElement.addEventListener("click", async function (e) {
+        location.reload();
     });
 }
 

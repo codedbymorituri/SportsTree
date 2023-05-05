@@ -109,6 +109,16 @@ li {
     white-space: nowrap;
 }
 
+.reload-button {
+    position: fixed;
+    right: 4px;
+    top: 20px;
+    padding: 6px 20px;
+    color: var(--primaryColor);
+    background: #f1f1f1;
+    border-color: black;
+}
+
 .highlight {
     color: #ff00ff;
 }
