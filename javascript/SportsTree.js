@@ -58,6 +58,7 @@ function addElementClickedEventHandler(element, siteName, endpoint, dataType) {
         if (dataType === "None") {
             return;
         }
+        var handledOk = true;
         if (dataType === "Link") {
             element.classList.add("highlight");
         }
@@ -66,19 +67,30 @@ function addElementClickedEventHandler(element, siteName, endpoint, dataType) {
             const ulElement = e.target.parentElement.querySelector("ul");
             const liElements = ulElement.querySelectorAll("li");
             if (liElements[0].innerHTML === "Loading...") {
-                await handleExpand(e.target, siteName, endpoint, dataType);
+               handledOk =  await handleExpand(e.target, siteName, endpoint, dataType);
             }
         }
         e.target.classList.toggle("selector-down");
-        updateStatusText(endpoint);
+        if (handledOk) {
+            updateStatusText(endpoint);
+        }
     });
 }
 
 async function handleExpand(parentElement, siteName, endpoint, dataType) {
+    var handledOk = true;
     if (dataType === "Link") {
-        return;
+        return handledOk;
     }
-    const treeViewItems = await indexRazorObject.invokeMethodAsync("HandleExpand", siteName, endpoint, dataType);
+    let treeViewItems;
+    try {
+        treeViewItems = await indexRazorObject.invokeMethodAsync("HandleExpand", siteName, endpoint, dataType);
+    } catch (error) {
+        console.log(error.message);
+        updateStatusText("CORS failed to connect");
+        treeViewItems = null;
+        handledOk = false;
+    }
     const ulElement = parentElement.parentElement.querySelector("ul");
     const liElements = ulElement.querySelectorAll("li");
     if (liElements[0].innerHTML === "Loading...") {
@@ -88,8 +100,9 @@ async function handleExpand(parentElement, siteName, endpoint, dataType) {
         addChildNothingFoundElement(parentElement);
     }
     else {
-        addChildElements(parentElement, siteName, treeViewItems); 
+        addChildElements(parentElement, siteName, treeViewItems);
     }
+    return handledOk;
 }
 
 function addChildElements(parentElement, siteName, childData) {
